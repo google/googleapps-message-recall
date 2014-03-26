@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Users{% endblock %}
+
+{% block subheader %}Users{% endblock %}
+
+{% block html_block %}
+
+{% import 'template_utils.html' as utils %}
+
+{% if tpl_users|length > 0 %}
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>User</th>
+      <th>State</th>
+      <th>Message State</th>
+      <th>Start (UTC)</th>
+      <th>Stop (UTC)</th>
+      <th>Elapsed (m:s)</th>
+    </tr>
+    {% for user in tpl_users %}
+      <tr>
+        <td>{{ user.user_email }}</td>
+        <td>
+          <a href="/task/users/{{ tpl_task_key_urlsafe }}?user_state={{ user.user_state }}">
+            {{ user.user_state }}
+          </a>
+        </td>
+        <td>
+          <a href="/task/users/{{ tpl_task_key_urlsafe }}?message_state={{ user.message_state }}">
+            {{ user.message_state }}
+          </a>
+        </td>
+        {% if user.start_datetime is not none %}
+          <td>{{ user.start_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        {% if user.end_datetime is not none %}
+          <td>{{ user.end_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        {% if user.start_datetime is not none
+           and user.end_datetime is not none %}
+          <td>
+            {{ utils.delta_minutes(user) }}:{{ utils.delta_seconds(user) }}
+          </td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+  {% if tpl_previous_cursor %}
+    <a href="/task/users/{{ tpl_task_key_urlsafe }}"
+       class="btn btn-primary" role="button">
+      Top
+    </a>
+  {% endif %}
+  {% if tpl_more and tpl_cursor is not none %}
+    <a href="/task/users/{{ tpl_task_key_urlsafe }}?user_cursor={{ tpl_cursor.urlsafe() }}"
+       class="btn btn-primary" role="button">
+      Next Users...
+    </a>
+  {% endif %}
+{% else %}
+  No domain users were found for this task.<br>
+{% endif %}
+<a href="/task/{{ tpl_task_key_urlsafe }}"
+   class="btn btn-primary" role="button">
+  View Task
+</a>
+<hr>
+{% endblock %}
+

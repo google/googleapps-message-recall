@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Recall Message{% endblock %}
+
+{% block subheader %}Recall Message{% endblock %}
+
+{% block active_create %}active{% endblock %}
+
+{% block html_block %}
+
+<div class="well">
+  <p>
+    Use this tool to remove an Email message from your domain-users mailboxes.
+    This is useful in critical situations when an email message has been
+    inadvertantly sent to your domain users.
+  </p>
+  <p>
+    Supply the Message-ID and all Google Apps domain users will be checked.
+  </p>
+  <p>
+    The email will be deleted from any active user that has received it.
+  </p>
+</div><!-- well -->
+
+<div class="container-fluid">
+  <div class="row">
+    <form id="create_recall_task" action="/create_task" method="post"
+          role="form">
+      <fieldset>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              Enter a Message-ID for the email to purge.
+            </h3>
+          </div><!-- panel-heading -->
+          <div class="panel-body">
+            <div>
+              <div class="form-group">
+                {{
+                  tpl_create_task_form.message_criteria(
+                      class_="form-control",
+                      placeholder="local-part@mydomain.com",
+                      autofocus="")
+                }}
+                {% if tpl_create_task_form.message_criteria.errors %}
+                  <br>
+                  <table class="table">
+                    {% for error in
+                       tpl_create_task_form.message_criteria.errors %}
+                      <tr class="danger">
+                        <td><strong>{{ error }}</strong></td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                {% endif %}
+              </div><!-- form-group -->
+              <input type="submit" class="btn btn-primary" value="Submit">
+            </div><!-- form-error -->
+          </div><!-- panel-body -->
+        </div><!-- panel-default -->
+      </fieldset>
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+    </form>
+  </div><!-- row -->
+</div><!-- container-fluid -->
+<hr>
+{% endblock %}

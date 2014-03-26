@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Debug Task{% endblock %}
+
+{% block subheader %}Debug Task{% endblock %}
+
+{% block html_block %}
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">TASK</h3>
+  </div><!-- panel-heading -->
+  <div class="panel-body">
+    <table class="table table-bordered table-hover">
+      <tr>
+        <th>Task ID</th>
+        <td>{{ tpl_task.key.id() }}</td>
+      </tr>
+      <tr>
+        <th>URLSafe Task ID</th>
+        <td>{{ tpl_task.key.urlsafe() }}</td>
+      </tr>
+      <tr>
+        <th>Task State</th>
+        <td>{{ tpl_task.task_state }}</td>
+      </tr>
+      <tr>
+        <th>Task Aborted</th>
+        <td>{{ tpl_task.AmIAborted() }}</td>
+      </tr>
+      <tr>
+        <th>Users Added</th>
+        <td>{{ tpl_task.GetUserCountForTask() }}</td>
+      </tr>
+      <tr>
+        <th>Users Completed</th>
+        <td>{{ tpl_task.GetUserCountForTaskWithTerminalUserStates() }}</td>
+      </tr>
+    </table>
+  </div><!-- panel-body -->
+</div><!-- panel-default -->
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">COUNTERS</h3>
+  </div><!-- panel-heading -->
+  <div class="panel-body">
+    <table class="table table-bordered table-hover">
+      {% for counter_title, counter_count in tpl_counter_tuples %}
+        <tr>
+          <th>{{ counter_title }}: {{ counter_count }}</th>
+        </tr>
+      {% endfor %}
+    </table>
+  </div><!-- panel-body -->
+</div><!-- panel-default -->
+
+<div>
+  <a href="/task/{{ tpl_task.key.urlsafe() }}"
+     class="btn btn-primary" role="button">
+    View Task
+  </a>
+  {% if tpl_task.GetUserCountForTask() > 0 %}
+    <a href="/task/users/{{ tpl_task.key.urlsafe() }}"
+       class="btn btn-primary" role="button">
+      View Users
+    </a>
+  {% endif %}
+  <a href="/task/report/{{ tpl_task.key.urlsafe() }}"
+     class="btn btn-primary" role="button">
+    View Report
+  </a>
+  {% if tpl_task.GetErrorReasonCountForTask() > 0 %}
+    <a href="/task/problems/{{ tpl_task.key.urlsafe() }}"
+       class="btn btn-primary" role="button">
+      View Problems
+    </a>
+  {% endif %}
+</div>
+<hr>
+{% endblock %}

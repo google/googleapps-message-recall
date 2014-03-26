@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Report{% endblock %}
+
+{% block subheader %}Report{% endblock %}
+
+{% block html_block %}
+
+A message recall task was started by <strong>{{ tpl_task.owner_email }}</strong>
+.<br>
+<br>
+
+The criteria used to match was:<br>
+message-id=<strong>{{ tpl_task.message_criteria }}</strong><br>
+<br>
+
+The task state at this time is <strong>{{ tpl_task.task_state }}</strong>.<br>
+<br>
+
+{% if tpl_task.GetErrorReasonCountForTask() > 0 %}
+  This task encountered
+  <strong>{{ tpl_task.GetErrorReasonCountForTask() }}</strong>
+  error reasons.<br>
+{% endif %}
+
+A total of
+<strong>{{ tpl_task.GetUserCountForTask() }}</strong>
+users were identified as candidates and
+<strong>
+  {{ tpl_task.GetUserCountForTaskWithTerminalUserStates() }}
+</strong> users were completely processed.<br>
+<br>
+
+{% if tpl_task.GetUserCountForTask(message_state_filters=['Verified Purged']) > 0 %}
+  A message was recalled for
+  <strong>
+    {{ tpl_task.GetUserCountForTask(message_state_filters=['Verified Purged']) }}
+  </strong> users.<br>
+{% else %}
+  No messages were recalled from any users.<br>
+{% endif %}
+
+<table class="table">
+  <tr>
+    <td>
+      <h2>Task User State Summary</h2>
+      <table class="table table-bordered table-striped">
+        {% for user_state in tpl_user_states|sort %}
+          <tr>
+            <th style="padding: 10px">
+              <a href="/task/users/{{ tpl_task_key_urlsafe }}?user_state={{ user_state }}">
+                {{ user_state }}
+              </a>
+            </th>
+            <td style="padding: 10px">
+              {{ tpl_task.GetUserCountForTask(user_state_filters=[user_state]) }}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </td>
+    <td>
+      <h2>Task Message State Summary</h2>
+      <table class="table table-bordered table-striped">
+        {% for message_state in tpl_message_states|sort %}
+          <tr>
+            <th style="padding: 10px">
+              <a href="/task/users/{{ tpl_task_key_urlsafe }}?message_state={{ message_state }}">
+                {{ message_state }}
+              </a>
+            </th>
+            <td style="padding: 10px">
+              {{ tpl_task.GetUserCountForTask(message_state_filters=[message_state]) }}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </td>
+  </tr>
+</table>
+<a href="/task/{{ tpl_task_key_urlsafe }}"
+   class="btn btn-primary" role="button">
+  View Task
+</a>
+{% if tpl_task.GetErrorReasonCountForTask() > 0 %}
+  <a href="/task/problems/{{ tpl_task.key.urlsafe() }}"
+     class="btn btn-primary" role="button">
+    View Problems
+  </a>
+{% endif %}
+<hr>
+{% endblock %}

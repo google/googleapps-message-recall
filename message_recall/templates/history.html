@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}History{% endblock %}
+
+{% block subheader %}History{% endblock %}
+
+{% block active_history %}active{% endblock %}
+
+{% block html_block %}
+
+{% import 'template_utils.html' as utils %}
+
+{% if tpl_tasks|length > 0 %}
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Details</th>
+      <th>State</th>
+      <th>Owner</th>
+      <th>Message-ID</th>
+      <th>Start (UTC)</th>
+      <th>Stop (UTC)</th>
+      <th>Elapsed (m:s)</th>
+      <th>Total Users</th>
+      <th>Users Processed</th>
+      <th>Messages Recalled</th>
+      <th>Problems</th>
+    </tr>
+    {% for task in tpl_tasks %}
+      <tr>
+        <td>
+          <a href="/task/{{ task.key.urlsafe() }}">View</a>
+        </td>
+        <td>
+          {{ task.task_state }}<br>
+          {% if task.AmIAborted() %}
+            [ABORTED]
+          {% endif %}
+        </td>
+        <td>{{ task.owner_email }}</td>
+        <td>{{ task.message_criteria|wordwrap(width=25) }}</td>
+        {% if task.start_datetime is not none %}
+          <td>{{ task.start_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        {% if task.end_datetime is not none %}
+          <td>{{ task.end_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        {% if task.start_datetime is not none
+           and task.end_datetime is not none %}
+          <td>
+            {{ utils.delta_minutes(task) }}:{{ utils.delta_seconds(task) }}
+          </td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        <td>
+          {{ task.GetUserCountForTask() }}
+        </td>
+        <td>
+          {{ task.GetUserCountForTaskWithTerminalUserStates() }}
+        </td>
+        <td>
+          {{ task.GetUserCountForTask(message_state_filters=['Verified Purged']) }}
+        </td>
+        {% if task.GetErrorReasonCountForTask() > 0 %}
+          <td>
+            <a href="/task/problems/{{ task.key.urlsafe() }}"
+               class="btn btn-primary" role="button">
+              Problems
+            </a>
+          </td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+  {% if tpl_previous_cursor %}
+    <a href="/history" class="btn btn-primary" role="button">
+      Top
+    </a>
+  {% endif %}
+  {% if tpl_more and tpl_cursor is not none %}
+    <a href="/history?task_cursor={{ tpl_cursor.urlsafe() }}"
+       class="btn btn-primary" role="button">
+      Previous Tasks...
+    </a>
+  {% endif %}
+{% else %}
+  There are no Recall Tasks found in this domain.
+{% endif %}
+<hr>
+{% endblock %}

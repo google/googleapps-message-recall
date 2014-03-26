@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Task{% endblock %}
+
+{% block subheader %}Task{% endblock %}
+
+{% block html_block %}
+
+{% import 'template_utils.html' as utils %}
+
+{% if tpl_task is not none %}
+  <table class="table">
+    <tr class="warning"><td>Tip: Refresh frequently to see updates.</td></tr>
+  </table>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>State</th>
+      <td>{{ tpl_task.task_state }}</td>
+    </tr>
+    <tr>
+      <th>Owner</th>
+      <td>{{ tpl_task.owner_email }}</td>
+    </tr>
+    <tr>
+      <th>Message-ID</th>
+      <td>{{ tpl_task.message_criteria }}</td>
+    </tr>
+    <tr>
+      <th>Start (UTC)</th>
+      {% if tpl_task.start_datetime is not none %}
+        <td>{{ tpl_task.start_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+      {% else %}
+        <td>&nbsp;</td>
+      {% endif %}
+    </tr>
+    <tr>
+      <th>Stop (UTC)</th>
+      {% if tpl_task.end_datetime is not none %}
+        <td>{{ tpl_task.end_datetime.strftime('%Y%m%d %I:%M:%S') }}</td>
+      {% else %}
+        <td>&nbsp;</td>
+      {% endif %}
+    </tr>
+    <tr>
+      <th>Elapsed (m:s)</th>
+      {% if tpl_task.start_datetime is not none
+         and tpl_task.end_datetime is not none %}
+        <td>
+          {{ utils.delta_minutes(tpl_task) }}:{{ utils.delta_seconds(tpl_task) }}
+        </td>
+      {% else %}
+        <td>&nbsp;</td>
+      {% endif %}
+    </tr>
+    <tr>
+      <th>Total Users</th>
+      <td>{{ tpl_task.GetUserCountForTask() }}</td>
+    </tr>
+    <tr>
+      <th>Users Processed</th>
+      <td>
+        {{ tpl_task.GetUserCountForTaskWithTerminalUserStates() }}
+      </td>
+    </tr>
+    <tr>
+      <th>Users with Messages Recalled</th>
+      <td>
+        {{ tpl_task.GetUserCountForTask(message_state_filters=['Verified Purged']) }}
+      </td>
+    </tr>
+    {% if tpl_task.is_aborted and tpl_task.task_state == 'Done' %}
+      <tr>
+        <th>Aborted</th>
+        <td>Y</td>
+      </tr>
+    {% endif %}
+    {% if tpl_task.GetErrorReasonCountForTask() > 0 %}
+      <tr>
+        <th>Problems</th>
+        <td>{{ tpl_task.GetErrorReasonCountForTask() }}</td>
+      </tr>
+    {% endif %}
+  </table>
+  <div>
+    {% if tpl_task.GetUserCountForTask() > 0 %}
+      <a href="/task/users/{{ tpl_task.key.urlsafe() }}" role="button"
+         class="btn btn-primary">
+        View Users
+      </a>
+    {% endif %}
+    <a href="/task/report/{{ tpl_task.key.urlsafe() }}" role="button"
+       class="btn btn-primary">
+      View Report
+    </a>
+    {% if tpl_task.GetErrorReasonCountForTask() > 0 %}
+      <a href="/task/problems/{{ tpl_task.key.urlsafe() }}" role="button"
+         class="btn btn-primary">
+        View Problems
+      </a>
+    {% endif %}
+    <a href="/task/debug/{{ tpl_task.key.urlsafe() }}" role="button"
+       class="btn btn-primary">
+      Debug Task
+    </a>
+  </div>
+{% endif %}
+<hr>
+{% endblock %}

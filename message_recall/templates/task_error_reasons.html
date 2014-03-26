@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% block title %}Error Reasons{% endblock %}
+
+{% block subheader %}Error Reasons{% endblock %}
+
+{% block html_block %}
+
+{% if tpl_errors|length > 0 %}
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Timestamp (UTC)</th>
+      <th>User Email (optional)</th>
+      <th>Reason</th>
+    </tr>
+    {% for error_reason in tpl_errors %}
+      <tr>
+        <td>{{ error_reason.error_datetime }}</td>
+        {% if error_reason.user_email is not none %}
+          <td>{{ error_reason.user_email }}</td>
+        {% else %}
+          <td>&nbsp;</td>
+        {% endif %}
+        <td>{{ error_reason.error_reason }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% if tpl_previous_cursor %}
+    <a href="/task/errors/{{ tpl_task_key_urlsafe }}"
+       class="btn btn-primary" role="button">
+      Top
+    </a>
+  {% endif %}
+  {% if tpl_more and tpl_cursor is not none %}
+    <a href="/task/errors/{{ tpl_task_key_urlsafe }}?error_cursor={{ tpl_cursor.urlsafe() }}"
+       class="btn btn-primary" role="button">
+      Next Errors...
+    </a>
+  {% endif %}
+{% else %}
+  No Error Reasons were found for this task.<br>
+{% endif %}
+<a href="/task/{{ tpl_task_key_urlsafe }}"
+   class="btn btn-primary" role="button">
+  View Task
+</a>
+<hr>
+{% endblock %}

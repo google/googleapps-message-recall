@@ -1,0 +1,93 @@
+{#
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"
+          rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document">
+    <div class="container">
+      <div class="masthead">
+        <table>
+          <tr>
+            <td>
+              <img src="/message_recall.png" class="img-rounded">
+            </td>
+            <td>
+              <h2 class="page-header">
+                Message Recall - {% block subheader %}{% endblock %}
+              </h2>
+            </td>
+          </tr>
+        </table>
+        <!-- Static navbar -->
+        <div class="navbar navbar-inverse navbar-default" role="navigation">
+          <div class="container">
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li class="{% block active_landing %}{% endblock %}">
+                  <a href="/">Home</a>
+                </li>
+                <li class="{% block active_create %}{% endblock %}">
+                  <a href="/create_task">Recall Message</a>
+                </li>
+                <li class="{% block active_history %}{% endblock %}">
+                  <a href="/history">History</a>
+                </li>
+                <li class="{% block active_about %}{% endblock %}">
+                  <a href="/about">About</a>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li>
+                  <a href="{{ tpl_logout_url }}">
+                      Sign out ({{ tpl_user_name }})&nbsp;
+                  </a>
+                </li>
+              </ul>
+            </div><!-- .nav-collapse -->
+          </div><!-- .container -->
+        </div><!-- .navbar navbar-default -->
+      </div><!-- .masthead -->
+    </div><!-- .container -->
+
+    <div class="container">
+      {% block html_block %}{% endblock %}
+      {% block footer_block %}{% endblock %}
+    </div><!-- .container -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  </body>
+</html>
