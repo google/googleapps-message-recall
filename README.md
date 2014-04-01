@@ -30,7 +30,9 @@ The process of setting up the message recall application includes multiple
 steps.  The user must be a domain Super-Admin and will configure an AppEngine
 application, the Google Apps domain and a Google Developer Console project.
 
-The detailed instructions are included in the INSTALL-MESSAGE-RECALL.pdf file.
+The detailed instructions are included in the
+[INSTALL-MESSAGE-RECALL.pdf](https://github.com/google/googleapps-message-recall/blob/master/INSTALL-MESSAGE-RECALL.pdf)
+file.
 
 ## Support
 
