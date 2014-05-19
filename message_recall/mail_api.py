@@ -142,7 +142,7 @@ class GmailInterface(object):
   # Modify this variable to the appropriate 'Trash' label. In the U.S., it
   # should be 'Trash'. In the U.K. it should be 'Bin'.
   _LOCALIZED_TRASH_LABEL = 'Trash'
-  _SEARCH_MESSAGE_ID = '(HEADER Message-ID "%s")'
+  _SEARCH_MESSAGE_ID = '(HEADER Message-ID <%s>)'
   _SERVER_ADDRESS = 'imap.gmail.com'
   _SERVER_PORT = 993
   _DEBUG_LEVEL = 0  # 0-5: 0=default, 5=verbose.
