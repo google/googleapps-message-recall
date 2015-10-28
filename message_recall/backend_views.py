@@ -243,6 +243,7 @@ class Phase2RetrieveDomainUsersHandler(BackendBaseHandler):
         return
       if domain_user.DomainUserToCheckModel.IsUserEmailEntityInTask(
           self._task_key_id, user_email):
+        user_count -= 1
         continue
       user_to_add = domain_user.DomainUserToCheckModel(
           recall_task_id=self._task_key_id, user_email=user_email)
@@ -391,7 +392,8 @@ class Phase2RetrieveDomainUsersHandler(BackendBaseHandler):
       for user_tuples_page in user_retriever.DomainUserRetriever(
           owner_email=owner_email,
           user_domain=view_utils.GetUserDomain(owner_email),
-          search_query='email:%s*' % email_prefix).RetrieveDomainUsers():
+          email_query_prefix=email_prefix,
+          use_glob=True).RetrieveDomainUsers():
         self._AddUserRecordsPage(user_tuples=user_tuples_page)
     except recall_errors.MessageRecallError:
       view_utils.FailRecallTask(

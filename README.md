@@ -34,8 +34,25 @@ The detailed instructions are included in the
 [INSTALL-MESSAGE-RECALL.pdf](https://github.com/google/googleapps-message-recall/blob/master/INSTALL-MESSAGE-RECALL.pdf)
 file.
 
+## appcfg.py Command Examples
+
+Deployment Commands
+1. To deploy:
+     $ appcfg.py --noauth_local_webserver update .
+   OR
+     $ appcfg.py update .
+   THEN
+     $ appcfg.py update_queues .
+   THEN
+     $ appcfg.py backends . update
+
+2. To clear existing appcfg.py auth tokens (if you change users):
+     $ rm ~/.appcfg_oauth2_tokens
+
+3. To retrieve the code from an existing application:
+     $ appcfg.py --noauth_local_webserver  download_app -A <app-id> .
+
 ## Support
 
 For questions and answers join/view the
 [googleapps-message-recall Google Group](https://groups.google.com/forum/#!forum/opensource-googleapps-message-recall).
-

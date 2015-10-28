@@ -98,7 +98,7 @@ class RecallTaskModel(ndb.Model):
       time.sleep(2**retries)
       retries += 1
     raise recall_errors.MessageRecallDataError(
-        'Cannot locate RecallTaskModel id=%s.', task_key_id)
+        'Cannot locate RecallTaskModel id=%s.' % task_key_id)
 
   @classmethod
   def GetQueryBySafeUrlTaskKey(cls, user_domain, task_key_urlsafe):

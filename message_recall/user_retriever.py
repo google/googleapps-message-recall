@@ -32,7 +32,8 @@ class DomainUserRetriever(object):
   Uses http_utils to add error handling and retry using backoff.
   """
 
-  def __init__(self, owner_email, user_domain, search_query):
+  def __init__(self, owner_email, user_domain, email_query_prefix,
+               use_glob=False):
     """Initialize the search class.
 
     Build the items needed to page through domain user lists which are expected
@@ -43,16 +44,20 @@ class DomainUserRetriever(object):
     Args:
       owner_email: String email address of the user who owns the task.
       user_domain: String domain for our apps domain.
-      search_query: Admin SDK search query string (e.g. 'email:%s*' % const).
+      email_query_prefix: Admin SDK search query prefix (used in email:%s*).
+      use_glob: True if need to add * to the end of the search query.
     """
     self._http = credentials_utils.GetAuthorizedHttp(owner_email)
     self._user_domain = user_domain
-    self._search_query = search_query
+    self._email_query_prefix = email_query_prefix
+    self._search_query = 'email:%s' % email_query_prefix
+    if use_glob:
+      self._search_query += '*'
 
     # Have seen the following error from build():
     # 'DeadlineExceededError: The API call urlfetch.Fetch() took too long '
     # 'to respond and was cancelled.'
-    directory_service = build('admin', 'directory_v1')
+    directory_service = build('admin', 'directory_v1', http=self._http)
     self._users_collection = directory_service.users()
 
   def _FetchUserListPage(self, next_page_token=None):
@@ -121,7 +126,9 @@ class DomainUserRetriever(object):
     while True:
       users_list = self._FetchUserListPage(next_page_token=next_page_token)
       yield [(user['primaryEmail'], user['suspended'])
-             for user in users_list.get('users', [])]
+             for user in users_list.get('users', [])
+             if user['primaryEmail'] and user['primaryEmail'].startswith(
+               self._email_query_prefix)]
       next_page_token = users_list.get('nextPageToken')
       if not next_page_token:
         break

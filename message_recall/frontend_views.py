@@ -175,7 +175,7 @@ def _FailIfNonAdminUser(user_email):
   retriever = user_retriever.DomainUserRetriever(
       owner_email=user_email,
       user_domain=view_utils.GetUserDomain(user_email),
-      search_query='email:%s' % user_email)
+      email_query_prefix=user_email)
   if not retriever.GetUserAttribute(user_email, 'isAdmin'):
     # User is not a super-admin...
     raise recall_errors.MessageRecallAuthenticationError(
