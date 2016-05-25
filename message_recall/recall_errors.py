@@ -35,6 +35,11 @@ class MessageRecallAuthenticationError(MessageRecallError):
   pass
 
 
+class MessageRecallBillingError(MessageRecallError):
+  """Any billing problem."""
+  pass
+
+
 class MessageRecallCounterError(MessageRecallError):
   """Any counter problem."""
   pass

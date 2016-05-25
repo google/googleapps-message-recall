@@ -16,9 +16,9 @@
 
 import os
 import re
-import socket
 import time
 
+import billing_info
 import jinja2
 import log_utils
 from models import domain_user
@@ -33,11 +33,11 @@ import wtforms
 from wtforms import validators
 import xsrf_helper
 
+from google.appengine.api import app_identity
 from google.appengine.api import memcache
 from google.appengine.api import users
 from google.appengine.api.taskqueue import Error as TaskQueueError
 from google.appengine.api.taskqueue import Task
-from google.appengine.runtime import apiproxy_errors
 
 
 _APPLICATION_DIR = os.path.dirname(__file__)
@@ -115,9 +115,8 @@ def _SafelyGetCurrentUserEmail():
 def _FailIfBillingNotEnabled(user_email):
   """Ensure Google Apps Domain has billing enabled.
 
-  Billing-enabled is required to use sockets in AppEngine.
-  The IMAP mail api uses sockets.  So this application requires billing
-  to be enabled.
+  Billing-enabled is required to use the IMAP mail API in AppEngine due to
+  its use of sockets. So this application requires billing to be enabled.
 
   If billing not enabled, this is observed:
 
@@ -128,25 +127,17 @@ def _FailIfBillingNotEnabled(user_email):
     user_email: String email address of the form user@domain.com.
 
   Raises:
-    MessageRecallAuthenticationError: If user is not properly authorized.
+    MessageRecallBillingError: If billing is not enabled.
   """
   if memcache.get(user_email, namespace=_APPLICATION_BILLING_CACHE_NAMESPACE):
     return
-  imap_host = 'imap.gmail.com'
-  imap_port = 993
-  # The socket is discarded after 2min of no use.
-  s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  try:
-    s.bind((imap_host, imap_port))
-  except apiproxy_errors.FeatureNotEnabledError as e:
-    raise recall_errors.MessageRecallError(
+
+  billing = billing_info.BillingInfo(owner_email=user_email)
+  if not billing.IsProjectBillingEnabled(app_identity.get_application_id()):
+    raise recall_errors.MessageRecallBillingError(
         'This AppEngine application requires billing status: '
-        '"Billing Enabled".  Please choose "Enable Billing" in the AppEngine '
-        'admin console for this application (%s).' % e)
-  except Exception as e:
-    # Expect "[Errno 13] Permission denied" once billing enabled.
-    if str(e) != '[Errno 13] Permission denied':
-      raise
+        '"Billing Enabled".  Please choose "Enable Billing" in the '
+        'cloud console Billing Overview for this project.')
   _CacheUserEmailBillingEnabled(user_email)
 
 

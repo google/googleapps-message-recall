@@ -20,6 +20,8 @@
 SERVICE_ACCOUNT_NAME = ('000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
                         '@developer.gserviceaccount.com')
 SERVICE_SCOPES = [
+    # For billing.
+    'https://www.googleapis.com/auth/cloud-billing.readonly',
     # For directory.
     'https://www.googleapis.com/auth/admin.directory.user.readonly',
     # For IMAP mail API.
